@@ -44,12 +44,19 @@ const PlaceOrder = () => {
       amount: getTotalCartAmount() + 2,
     }
 
-    let response = await axios.post(url + "/api/order/place", orderData, { headers: { token } });
-    if (response.data.success) {
-      const { session_url } = response.data;
-      window.location.replace(session_url);
-    } else {
-      alert("Error");
+    try { // Thêm try-catch để bắt lỗi mạng/API thất bại
+        let response = await axios.post(url + "/api/order/place", orderData, { headers: { token } });
+        
+        if (response.data.success) {
+            const { session_url } = response.data;
+            window.location.replace(session_url);
+        } else {
+            // Hiển thị thông báo lỗi chi tiết từ Backend
+            alert(response.data.message); 
+        }
+    } catch (error) {
+        // Bắt lỗi khi giao tiếp API thất bại (ví dụ: lỗi CORS hoặc lỗi mạng)
+        alert("Lỗi kết nối hoặc API thất bại. Vui lòng kiểm tra lại cấu hình CORS và URL Backend. Chi tiết: " + error.message);
     }
   }
 
